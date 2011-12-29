@@ -1,0 +1,116 @@
+-- phpMyAdmin SQL Dump
+-- version 3.3.7deb6
+-- http://www.phpmyadmin.net
+--
+-- Host: localhost
+-- Generation Time: Dec 29, 2011 at 08:43 PM
+-- Server version: 5.1.49
+-- PHP Version: 5.3.3-7+squeeze3
+
+SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+
+--
+-- Database: `rebelcms`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `media`
+--
+
+CREATE TABLE IF NOT EXISTS `media` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `filename` varchar(120) NOT NULL,
+  `caption` varchar(240) DEFAULT NULL,
+  `meta` varchar(240) DEFAULT NULL,
+  `size` int(2) DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  KEY `id` (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
+
+--
+-- Dumping data for table `media`
+--
+
+INSERT INTO `media` (`id`, `filename`, `caption`, `meta`, `size`, `created_at`, `updated_at`) VALUES
+(5, '1325127784buckylasek.jpg', 'Bucky Lasek', 'bucky lasek', 2, '2011-12-29 03:03:04', '2011-12-29 09:40:08'),
+(6, '1325132404sydneybridge.jpg', 'Sydney ', '', 2, '2011-12-29 04:20:05', '2011-12-29 04:20:35');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pages`
+--
+
+CREATE TABLE IF NOT EXISTS `pages` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `slug` varchar(80) NOT NULL,
+  `title` text NOT NULL,
+  `summary` text NOT NULL,
+  `content` text NOT NULL,
+  `publish` int(3) DEFAULT NULL,
+  `level` int(3) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  KEY `id` (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
+
+--
+-- Dumping data for table `pages`
+--
+
+INSERT INTO `pages` (`id`, `slug`, `title`, `summary`, `content`, `publish`, `level`, `created_at`, `updated_at`) VALUES
+(7, 'about', 'About', 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros.', 'Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus.\r\n\r\nPhasellus ultrices nulla quis nibh. Quisque a lectus. Donec consectetuer ligula vulputate sem tristique cursus. Nam nulla quam, gravida non, commodo a, sodales sit amet, nisi.', 1, 0, '2011-12-28 12:27:05', '2011-12-29 07:04:47'),
+(2, 'photo', 'Photo', 'This is a photo', 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna nibh, viverra non, semper suscipit, posuere a, pede.\r\n\r\nDonec nec justo eget felis facilisis fermentum. Aliquam porttitor mauris sit amet orci. Aenean dignissim pellentesque felis.\r\n\r\nMorbi in sem quis dui placerat ornare. Pellentesque odio nisi, euismod in, pharetra a, ultricies in, diam. Sed arcu. Cras consequat.', 1, 0, '2011-12-28 01:59:37', '2011-12-29 09:40:43');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pages_media`
+--
+
+CREATE TABLE IF NOT EXISTS `pages_media` (
+  `page_id` int(11) DEFAULT NULL,
+  `media_id` int(11) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `pages_media`
+--
+
+INSERT INTO `pages_media` (`page_id`, `media_id`) VALUES
+(2, 5),
+(7, 6);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `firstname` varchar(140) NOT NULL,
+  `lastname` varchar(140) NOT NULL,
+  `email` varchar(120) NOT NULL,
+  `password` varchar(80) NOT NULL,
+  `role` varchar(20) NOT NULL DEFAULT 'public',
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `firstname`, `lastname`, `email`, `password`, `role`, `created_at`, `updated_at`) VALUES
+(3, 'admin', 'admin', 'admin@example.com', '$2a$08$rsOxrYRlvoWIBERHnT5bt.rTxJTAPHhDUD9K3I4DJCOGxJ3CiU7Tm', 'admin', '2011-12-29 07:29:35', '2011-12-29 07:29:35');

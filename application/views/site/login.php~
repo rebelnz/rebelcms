@@ -1,0 +1,47 @@
+<?php
+echo '<div id="login">';
+echo '<div class="sub-header grey-gradient">';
+echo '<h2>MEMBER LOGIN</h2>';
+echo '</div>';
+echo '<div class="clear"></div>';
+
+echo '<ul>';
+   
+echo Form::open('login', 'POST', array('class' => 'appnitro','id' => 'login-form') );
+echo '<li>';
+echo Form::label('email','Email Address',array('class'=>'description'));
+echo '<div>';
+echo Form::text('email', '', array('class' => 'element text huge','maxlength' => '140' ));
+echo '</div>';
+echo '</li>';
+
+echo '<li>';
+echo Form::label('password','Password', array('class'=>'description'));
+echo '<div>';
+echo Form::password('password',array('class' => 'element text huge','maxlength' => '140' ));
+echo '</div>';
+echo '</li>';
+
+echo '<li class="buttons-medium">';		
+echo Form::submit('LOGIN',array('id' => 'saveForm','class' => 'blue-submit', 'name' => 'submit')); 
+echo '</li>';
+
+echo Form::close();
+
+echo '<li>';		
+echo '<div id="reset-password">';
+echo '<small><a href="./reset">Forgot Password?</a></small>';
+echo '</div>';
+echo '</li>';
+	  
+echo '</ul>';
+
+if (isset($errors))
+  {
+	echo '<font color="red">';
+	echo HTML::ul($errors);
+	echo '</font>';
+  }
+  
+echo '</div>';
+?>

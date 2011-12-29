@@ -1,0 +1,206 @@
+<?php
+
+return array(
+
+	'GET /admin, GET /admin/pages' => function()
+	{
+
+	  $pages = Page::all();
+	  
+	  $view = View::of_admin_layout();
+	  $view->content = View::make('admin.pages')
+		->with('pages',$pages);
+		return $view;
+	},
+
+
+	'GET /admin/media' => function()
+	{
+	  $files = Media::all();
+	  
+	  $view = View::of_admin_layout();
+	  $view->content = View::make('admin.media')
+		->with('files',$files);
+		return $view;
+	},
+
+
+	'GET /admin/newpage/(:num?)' => function($pageid=NULL)
+	{
+
+	  if ( $pageid )
+		{
+		  $page = Page::find($pageid);
+		}
+
+	  $view = View::of_admin_layout();
+	  $view->content = View::make('admin.newpage')
+		->with('page',$page);
+		return $view;
+	},
+
+
+	'GET /admin/newmedia' => function()
+	{
+	  $view = View::of_admin_layout();
+	  $view->content = View::make('admin.newmedia');
+		return $view;
+	},
+
+
+	'GET /admin/deletepage/(:num?)' => function($pageid=NULL)
+	{	  
+	  DB::table('pages')->delete($pageid);	  
+	  
+	  DB::table('pages_media')
+	  	->where('page_id','=',$pageid)
+	  	->delete();
+
+	  return Redirect::to('admin/pages');		
+	},
+
+
+	'GET /admin/deletemedia/(:num?)' => function($mediaid=NULL)
+	{	  
+
+	  $media = Media::find($mediaid);
+	  
+	  unlink('img/' . $media->filename);
+	  unlink('img/medium_' . $media->filename);
+	  unlink('img/thumb_' . $media->filename);
+	  
+	  DB::table('media')->delete($mediaid);
+
+	  DB::table('pages_media')
+	  	->where('media_id','=',$mediaid)
+	  	->delete();
+
+	  return Redirect::to('admin/media');		
+	},
+
+
+	'GET /admin/publish/(:num?)/(:num?)' => function($pageid=NULL,$pub=NULL)
+	{
+	  $page = Page::find($pageid);
+	  $page->publish = $pub;
+	  $page->save();	  
+	  return Redirect::to('admin/pages');		
+	},
+
+
+	'GET /admin/editmedia/(:num?)' => function($mediaid=NULL)
+	{
+
+	  $media = Media::find($mediaid);
+	  $pages = DB::table('pages')
+		->get(array('title','slug','id'));
+
+	  $currentpage = DB::table('pages_media')
+		->where('media_id','=',$mediaid)
+		->get('page_id');
+
+	  $options = array();
+	  
+	  foreach ($pages as $page)
+		{
+		  $options[$page->id] = $page->title;
+		}	  
+	  $options['0'] = 'None';
+
+	  $view = View::of_admin_layout();
+	  $view->content = View::make('admin.editmedia')
+		->with('media',$media)
+		->with('currentpage',$currentpage)
+		->with('options',$options);
+		return $view;
+	},	
+
+
+	'POST /admin/editmedia' => function()
+	  {
+		$media_id = Input::get('mediaid');
+		$page_id = Input::get('page');
+		  
+		$media = Media::find($media_id);
+		$media->caption = Input::get('caption');
+		$media->meta = Input::get('meta');
+		$media->size = Input::get('size');
+		$media->save();
+
+		DB::table('pages_media')->where('media_id','=',$media_id)
+		  ->delete();
+
+		DB::table('pages_media')->insert(array('media_id'=>$media_id,
+											   'page_id'=>$page_id));
+											   
+		return Redirect::to('admin/media');
+				
+	  },
+
+
+	'POST /admin/newpage/(:any?)' => function()
+	{
+	  $rules = array(
+					 'slug' => 'required',
+					 'title' => 'required',
+					 );
+	  
+	  $validator = Validator::make(Input::all(), $rules);
+
+	  if ( $validator->invalid())		
+		{
+		  return Redirect::to('admin/newpage')
+			->with_errors($validator);
+		}
+	  
+	  $slug = Input::get('slug');
+	  $slug = URL::slug($slug);//make url friendly
+	  
+	  if ( Input::get('pageid') ) {
+		$page = Page::find(Input::get('pageid'));		  
+	  }
+	  else {  
+		$page = new Page;				 
+	  }
+
+	  $page->slug = $slug;
+	  $page->title = Input::get('title');
+	  $page->summary = Input::get('summary');
+	  $page->content = Input::get('content');
+	  $page->publish = Input::get('publish');
+		
+	  $page->save();
+	  
+	  return Redirect::to('admin/pages');
+	},
+
+
+	'POST /admin/newmedia' => function()
+	{
+	  
+	  $imagename = time() . Input::file('image.name');
+	  
+	  File::upload('image', PUBLIC_PATH . 'img/' . $imagename);
+	  
+	  $newimage = PUBLIC_PATH . 'img/' . $imagename;
+
+	  $image = new Imagick($newimage);	  
+
+	  $image->scaleImage(400,0);
+	  $image->writeImage(PUBLIC_PATH . 'img/medium_' . $imagename);	  
+
+	  $image->resizeImage(80,80,Imagick::FILTER_LANCZOS,1,TRUE);
+	  $image->writeImage(PUBLIC_PATH . 'img/thumb_' . $imagename);	  
+	  	  
+	  $image->destroy(); 
+
+	  $media = new Media;
+	  $media->filename = $imagename;
+	  $media->caption = Input::get('caption');
+	  $media->meta = Input::get('meta');
+	  $media->save();
+	  
+	  return Redirect::to('admin/media');
+	},
+
+);
