@@ -1,3 +1,4 @@
+NOTE: This was built with Laravel V2 - please see the [Laravel official website](http://laravel.com) for more recent version of the framework.
 Built using the awesome Laravel Framework and Twitter Bootstrap.This CMS is very basic and is not recommended for production unless it underwent some major testing and modification. It requires MYSQL and imagick.
 
 More Disclaimer
